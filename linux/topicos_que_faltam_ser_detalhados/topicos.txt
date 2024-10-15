@@ -1,0 +1,9 @@
+instalação
+processo de boot
+gerenciamento de disco
+LVM - LOGICAL VOLUME MANAGER
+networking
+permissoes avançadas
+shell script
+dicas e truques
+ssh
