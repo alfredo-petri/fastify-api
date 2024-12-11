@@ -11,11 +11,11 @@ const server = http.createServer((req, res) => {
             name: "Jhon Doe",
             email: "jhondoe@example.com",
         })
-        return res.end("criação de usuários")
+        return res.writeHead(201).end("criação de usuário bem sucedida")
     }
     if (method === "GET" && url === "/users") return res.setHeader("content-type", "aplication/json").end(JSON.stringify(users))
 
-    return res.end("Hello World!!!")
+    return res.writeHead(404).end("Recurso não encontrado")
 })
 
 server.listen(3333)
