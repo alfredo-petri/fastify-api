@@ -1,7 +1,8 @@
 import http from "node:http"
 import { json } from "./midlewares/json.js"
+import { Database } from "./midlewares/database.js"
 
-const users = []
+const database = new Database()
 
 const server = http.createServer(async (req, res) => {
     const { method, url } = req
@@ -10,14 +11,20 @@ const server = http.createServer(async (req, res) => {
     if (method === "POST" && url === "/users") {
         const { name, email } = req.body
 
-        users.push({
+        const user = {
             id: 1,
             name: name,
             email: email,
-        })
+        }
+
+        database.insert("users", user)
+
         return res.writeHead(201).end("criação de usuário bem sucedida")
     }
-    if (method === "GET" && url === "/users") return res.end(JSON.stringify(users))
+    if (method === "GET" && url === "/users") {
+        const users = database.select("users")
+        return res.end(JSON.stringify(users))
+    }
 
     return res.writeHead(404).end("Recurso não encontrado")
 })
