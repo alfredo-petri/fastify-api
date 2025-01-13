@@ -30,4 +30,11 @@ export const routes = [
             return res.writeHead(201).end("criação de usuário bem sucedida")
         },
     },
+    {
+        method: "DELETE",
+        path: BuildRoutePath("/users/:id"),
+        handler: (req, res) => {
+            return res.writeHead(201).end("usuário deletado com sucesso")
+        },
+    },
 ]
