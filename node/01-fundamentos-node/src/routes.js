@@ -30,11 +30,29 @@ export const routes = [
             return res.writeHead(201).end("criação de usuário bem sucedida")
         },
     },
+   
+    {
+        method: "PUT",
+        path: BuildRoutePath("/users/:id"),
+        handler: (req, res) => {
+
+            const { id } = req.params
+            const { name, email} = req.body
+            database.update('users', id, {name, email})
+
+            return res.writeHead(204).end()
+        },
+    },
     {
         method: "DELETE",
         path: BuildRoutePath("/users/:id"),
         handler: (req, res) => {
-            return res.writeHead(201).end("usuário deletado com sucesso")
+
+            const { id } = req.params
+            
+            database.delete('users', id)
+
+            return res.writeHead(204).end()
         },
     },
 ]
