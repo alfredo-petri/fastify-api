@@ -2,35 +2,54 @@ import { FastifyInstance } from 'fastify'
 import { knex } from '../database'
 import { z } from 'zod'
 import { randomUUID } from 'node:crypto'
+import { checkSessionIdExists } from '../middlewares/check-session-id-exists'
 
 export async function transactionRoutes(app: FastifyInstance) {
-    app.get('/', async () => {
-        const transactions = await knex('transactions').select()
+    app.get('/', { preHandler: [checkSessionIdExists] }, async (request) => {
+        const { sessionId } = request.cookies
+        const transactions = await knex('transactions')
+            .select()
+            .where('session_id', sessionId)
 
         return {
             transactions,
         }
     })
 
-    app.get('/:id', async (request) => {
+    app.get('/:id', { preHandler: [checkSessionIdExists] }, async (request) => {
+        const { sessionId } = request.cookies
+
         const getTransactionParamsSchema = z.object({
             id: z.string().uuid(),
         })
 
         const { id } = getTransactionParamsSchema.parse(request.params)
 
-        const transaction = await knex('transactions').where('id', id).first()
+        const transaction = await knex('transactions')
+            .where({
+                id,
+                session_id: sessionId,
+            })
+            .first()
 
         return transaction
     })
 
-    app.get('/balance', async () => {
-        const balance = await knex('transactions').sum('amount', {
-            as: 'balance',
-        })
+    app.get(
+        '/balance',
+        { preHandler: [checkSessionIdExists] },
+        async (request) => {
+            const { sessionId } = request.cookies
+            const balance = await knex('transactions')
+                .where({ session_id: sessionId })
+                .sum('amount', {
+                    as: 'amount',
+                })
+                .first()
 
-        return { balance }
-    })
+            return { balance }
+        },
+    )
 
     app.post('/', async (request, reply) => {
         const createTransactionBodySchema = z.object({
