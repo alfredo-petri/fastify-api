@@ -42,4 +42,10 @@ export async function transactionRoutes(app: FastifyInstance) {
 
         return reply.status(201).send()
     })
+
+    app.delete('/', async (request, reply) => {
+        await knex('transactions').delete()
+
+        return reply.status(204).send()
+    })
 }
