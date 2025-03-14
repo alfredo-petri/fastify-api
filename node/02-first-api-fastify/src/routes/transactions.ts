@@ -28,7 +28,7 @@ export async function transactionRoutes(app: FastifyInstance) {
         const createTransactionBodySchema = z.object({
             title: z.string(),
             amount: z.number(),
-            type: z.enum(['debito', 'credito']),
+            type: z.enum(['debit', 'credit']),
         })
         const body = createTransactionBodySchema.parse(request.body)
 
@@ -37,7 +37,7 @@ export async function transactionRoutes(app: FastifyInstance) {
         await knex('transactions').insert({
             id: randomUUID(),
             title,
-            amount: type === 'credito' ? amount : -1 * amount,
+            amount: type === 'credit' ? amount : -1 * amount,
         })
 
         return reply.status(201).send()
