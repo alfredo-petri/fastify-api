@@ -102,4 +102,42 @@ describe('Transactions routes', () => {
             }),
         )
     })
+
+    it('should be able to get account balance', async () => {
+        const createTransactionResponse = await request(app.server)
+            .post('/transactions')
+            .send({
+                title: 'new credit transaction',
+                amount: 5000,
+                type: 'credit',
+            })
+
+        const cookies = createTransactionResponse.get('Set-Cookie')
+
+        if (!cookies) {
+            throw new Error(
+                'Nenhum cookie foi retornado na resposta da transação.',
+            )
+        }
+
+        await request(app.server)
+            .post('/transactions')
+            .set('Cookie', cookies)
+            .send({
+                title: 'new debit transaction',
+                amount: 2000,
+                type: 'debit',
+            })
+
+        const accountBalanceResponse = await request(app.server)
+            .get('/transactions/balance')
+            .set('Cookie', cookies)
+            .expect(200)
+
+        expect(accountBalanceResponse.body.balance).toEqual(
+            expect.objectContaining({
+                amount: 3000,
+            }),
+        )
+    })
 })
