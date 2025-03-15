@@ -11,9 +11,7 @@ export async function transactionRoutes(app: FastifyInstance) {
             .select()
             .where('session_id', sessionId)
 
-        return {
-            transactions,
-        }
+        return { transactions }
     })
 
     app.get('/:id', { preHandler: [checkSessionIdExists] }, async (request) => {
